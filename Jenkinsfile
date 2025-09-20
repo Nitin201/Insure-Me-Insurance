@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Prepare Environment') {
             steps {
-                echo "Environment initialized"
+                echo "Initializing environment..."
             }
         }
 
@@ -23,7 +23,7 @@ pipeline {
 
         stage('Build Application') {
             steps {
-                echo "Cleaning, compiling, testing, packaging..."
+                echo "Cleaning, compiling, testing, and packaging..."
                 sh "${MAVEN_CMD} clean package"
             }
         }
@@ -61,14 +61,14 @@ pipeline {
 
         stage('Deploy to Test Server') {
             steps {
-                echo "Deploying via Ansible using workspace inventory file"
+                echo "Deploying via Ansible using workspace-relative inventory"
                 ansiblePlaybook(
                     become: true,
                     credentialsId: 'ansible-key',
                     disableHostKeyChecking: true,
-                    installation: 'ansible',  
-                    inventory: "${pwd()}/ansible/inventory.ini", // Use workspace path
-                    playbook: "${pwd()}/ansible-playbook.yml"
+                    installation: 'ansible',
+                    inventory: "${pwd()}/ansible/inventory.ini", // workspace-relative inventory
+                    playbook: "${pwd()}/ansible-playbook.yml"   // workspace-relative playbook
                 )
             }
         }
@@ -84,7 +84,7 @@ pipeline {
                 body: """Dear All,
 The Jenkins job ${JOB_NAME} has failed. Please check the details at ${BUILD_URL}""",
                 subject: "Job ${JOB_NAME} ${BUILD_NUMBER} FAILED",
-                to: 'shubham@gmail.com'
+                to: 'nitindodamani101@gmail.com'
             )
         }
     }
