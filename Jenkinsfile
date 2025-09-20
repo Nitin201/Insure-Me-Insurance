@@ -17,7 +17,7 @@ pipeline {
 
         stage('Git Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/Nitin201/Insure-Me-Insurance.git'
+                git branch: 'master', url: 'https://github.com/Nitin201/Insure-Me-Insurance.git'
             }
         }
 
@@ -67,8 +67,8 @@ pipeline {
                     credentialsId: 'ansible-key',
                     disableHostKeyChecking: true,
                     installation: 'ansible',
-                    inventory: "${pwd()}/ansible/inventory.ini", // workspace-relative inventory
-                    playbook: "${pwd()}/ansible-playbook.yml"   // workspace-relative playbook
+                    inventory: "${pwd()}/ansible/inventory.ini",
+                    playbook: "${pwd()}/ansible-playbook.yml"
                 )
             }
         }
