@@ -21,7 +21,7 @@ node {
 The Jenkins job ${JOB_NAME} has failed. Request you to please have a look immediately by clicking on the link below: 
 ${BUILD_URL}""",
                 subject: "Job ${JOB_NAME} ${BUILD_NUMBER} FAILED",
-                to: 'shubham@gmail.com'
+                to: 'nitin@gmail.com'
             )
         }
     }
@@ -45,16 +45,17 @@ ${BUILD_URL}""",
     
     stage('Containerize the Application') {
         echo 'Creating Docker image'
-        sh "docker build -t shubhamkushwah123/insure-me:${tagName} ."
+        sh "docker build -t nitin0091/insure-me:${tagName} ."
     }
     
-    stage('Push Docker Image to DockerHub') {
-        echo 'Pushing Docker image to DockerHub'
-        withCredentials([string(credentialsId: 'dock-password', variable: 'dockerHubPassword')]) {
-            sh "docker login -u shubhamkushwah123 -p ${dockerHubPassword}"
-            sh "docker push shubhamkushwah123/insure-me:${tagName}"
-        }
+   stage('Push Docker Image to DockerHub') {
+    echo 'Pushing Docker image to DockerHub'
+    withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+        sh "docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}"
+        sh "docker push nitin0091/insure-me:${tagName}"
     }
+}
+
     
     stage('Configure and Deploy to Test Server') {
         ansiblePlaybook(
