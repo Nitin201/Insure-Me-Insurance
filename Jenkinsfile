@@ -6,6 +6,7 @@ pipeline {
     }
 
     stages {
+
         stage('Prepare Environment') {
             steps {
                 echo "Initializing environment..."
@@ -61,27 +62,32 @@ pipeline {
             }
         }
 
-stage('Deploy to Test Server') {
-    steps {
-        echo "Deploying via Ansible using workspace-relative inventory"
-        ansiblePlaybook(
-            installation: 'ansible',                  // Name from Jenkins global tool config
-            inventory: 'ansible/inventory.ini',       // workspace-relative path
-            playbook: 'ansible-playbook.yml',         // workspace-relative path
-            become: true,
-            credentialsId: 'ansible-key',             // SSH key stored in Jenkins
-            disableHostKeyChecking: true
-        )
+        stage('Deploy to Test Server') {
+            steps {
+                echo "Deploying via Ansible using workspace-relative inventory"
+                ansiblePlaybook(
+                    installation: 'ansible',                  // Must match Jenkins global tool name
+                    inventory: 'ansible/inventory.ini',       // Relative to workspace
+                    playbook: 'ansible-playbook.yml',         // Relative to workspace
+                    become: true,
+                    credentialsId: 'ansible-key',             // SSH key stored in Jenkins
+                    disableHostKeyChecking: true
+                )
+            }
+        }
     }
-}
-
 
     post {
+        success {
+            echo "Pipeline completed successfully!"
+        }
         failure {
+            echo "Pipeline failed!"
             emailext(
                 to: 'nitindodamani101@gmail.com',
                 subject: "Jenkins Job ${JOB_NAME} #${BUILD_NUMBER} FAILED",
                 body: """Dear All,
+
 The Jenkins job ${JOB_NAME} has failed. Please check the details at ${BUILD_URL}"""
             )
         }
